@@ -23,15 +23,15 @@ header{display:flex;justify-content:space-between;align-items:end;gap:8px 24px;f
 header h1{font-family:var(--f-display);font-weight:700;font-size:clamp(30px,4.4vw,52px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
 header p{margin:0;color:var(--ink-2);max-width:52ch}
 
-#families{display:flex;gap:10px;flex-wrap:wrap}
-.fam{display:flex;flex-direction:column;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 10px 10px;min-width:0;flex:1 1 auto}
-.famname{font:600 11px/1 var(--f-body);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);padding-left:2px}
-.famitems{display:flex;gap:6px;flex-wrap:wrap}
-.famitems button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;flex:1 1 120px;text-align:left;cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 11px}
+#families{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px}
+.fam{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;min-width:0}
+.famname{font:600 11px/1 var(--f-body);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+.subrow{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px;align-items:start}
+.sublbl{font:500 12.5px/1.2 var(--f-body);color:var(--ink-2);padding-top:8px}
+.famitems{display:flex;gap:5px;flex-wrap:wrap}
+.famitems button{cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font:600 14px/1.1 var(--f-display)}
 .famitems button:hover{border-color:var(--ink-2)}
 .famitems button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
-.famitems .sub{font:12px/1.2 var(--f-body);opacity:.75}
-.famitems .nm{font:600 15px/1.15 var(--f-display)}
 
 .stage{position:relative;height:clamp(600px,80vh,840px);border-radius:16px;overflow:hidden;background:radial-gradient(ellipse 70% 60% at 45% 40%,var(--st-hi) 0%,var(--st-bg) 72%);color:var(--st-ink);isolation:isolate}
 #gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
@@ -92,7 +92,7 @@ footer{font-size:12.5px;color:var(--ink-2);max-width:90ch}
 <div class="wrap">
   <header>
     <h1>Instruments per dins</h1>
-    <p>Tria un instrument de cada subfamília. Gira’l, desmunta’l i toca’l per veure d’on surt el so.</p>
+    <p>Tria un instrument de l’orquestra. Gira’l, desmunta’l i toca’l per veure d’on surt el so.</p>
   </header>
 
   <nav id="families" aria-label="Famílies d’instruments"></nav>

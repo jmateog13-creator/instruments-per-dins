@@ -118,3 +118,24 @@ return {
 - Frases curtes, paraules de cada dia, una idea per frase. Res de fórmules, ni Hz a cada frase, ni termes com "Helmholtz" o "inharmònic". Si cal un terme tècnic (p. ex. "ànima", "embocadura", "ressonador"), explica'l amb poques paraules.
 - `parts.text` ≤ 2 frases. `tour.text` ≤ 3 frases. `dato`: una dada curiosa i certa (material, mida, història).
 - Tota la informació ha de ser certa. Si dubtes d'una dada, no la posis.
+
+## Aclariments (després dels 7 primers instruments)
+
+- `play(note, opt)`: el motor passa **l'objecte nota** (un element de `notes`) i **l'índex** de l'opció (0, 1…). A `update`, `s.note` és l'objecte i `s.noteIndex` l'índex.
+- Cada `play()` posa `s.t` a 0 i l'envolupant visual (`s.env`) segueix el `{attack, hold, release}` que retornes. `s.t` només avança mentre `s.env > 0`.
+- Quan canvies d'opció, el motor torna a tocar la nota.
+- `M.brass(part, {xray:true})`, `M.silver(part, {xray:true})`, etc.: totes les funcions de `M` accepten `{xray}` com a últim argument.
+- Peces mòbils (arc, martellet, pistons, baqueta…): posa-les dins d'un `THREE.Group` fill del grup del motor i anima només aquest fill; el motor mou els grups quan es desmunta.
+- Brillantors i efectes que no són peces: `THREE.MeshBasicMaterial` propi, **no** registrat amb `mat()`, i `mesh.raycast = () => {}` perquè no es pugui clicar.
+- No facis servir `document`, `window` ni el navegador: tot el que necessites és a `ctx`.
+- Pots llegir els mòduls que ja existeixen a `inst/` i reaprofitar-ne idees i codi (copiant-lo al teu fitxer): `violi.js` (cos de fusta amb tapa deformable, forats en f, arc), `flauta.js` (columna d'aire amb ona estacionària, claus), `trompeta.js` (tubs amb corbes, camí de l'aire il·luminat, pistons), `caixa.js` (membranes amb modes, baquetes), `xilofon.js` (barra que vibra amb nodes, baqueta en arc), `piano.js` (mecanisme de martellet).
+
+## Prova obligatòria
+
+No obris el navegador ni cap servidor: altres agents l'estan fent servir. Comprova el teu mòdul amb:
+
+```bash
+node /private/tmp/claude-501/instr-smoke/smoke.mjs "<camí>/inst/<id>.js"
+```
+
+Munta l'instrument amb three.js real, comprova peces, etiquetes, despiece, terra, visita, notes i opcions, i executa l'animació de totes les notes. Ha d'acabar amb `OK: cap problema detectat.` No modifiquis aquest fitxer de prova.

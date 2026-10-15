@@ -9,15 +9,25 @@ const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
 
 const LIST=[
-  {fam:'Corda',items:[{id:'violi',sub:'Fregada',name:'Violí'},{id:'guitarra',sub:'Pinçada',name:'Guitarra'},{id:'piano',sub:'Percudida',name:'Piano'}]},
-  {fam:'Vent',items:[{id:'flauta',sub:'Fusta',name:'Flauta travessera'},{id:'trompeta',sub:'Metall',name:'Trompeta'}]},
-  {fam:'Percussió',items:[{id:'xilofon',sub:'Afinada',name:'Xilòfon'},{id:'caixa',sub:'No afinada',name:'Caixa'}]}
+  {fam:'Corda',subs:[
+    {sub:'Fregada',items:[['violi','Violí'],['viola','Viola'],['violoncel','Violoncel'],['contrabaix','Contrabaix']]},
+    {sub:'Pinçada',items:[['guitarra','Guitarra'],['arpa','Arpa']]},
+    {sub:'Percudida',items:[['piano','Piano']]}]},
+  {fam:'Vent',subs:[
+    {sub:'Fusta',items:[['flauta','Flauta travessera'],['clarinet','Clarinet'],['oboe','Oboè'],['fagot','Fagot']]},
+    {sub:'Metall',items:[['trompeta','Trompeta'],['trompa','Trompa'],['trombo','Trombó de vares'],['tuba','Tuba']]}]},
+  {fam:'Percussió',subs:[
+    {sub:'Afinada',items:[['xilofon','Xilòfon'],['timbals','Timbals']]},
+    {sub:'No afinada',items:[['caixa','Caixa'],['bombo','Bombo'],['plats','Plats'],['triangle','Triangle']]}]}
 ];
-const IDS=LIST.flatMap(f=>f.items.map(i=>i.id));
+// Instruments que ja tenen mòdul a inst/<id>.js (els altres no surten al menú)
+const READY=new Set(['violi','guitarra','piano','flauta','trompeta','xilofon','caixa','viola','oboe','tuba','triangle','trombo','fagot','bombo','violoncel','clarinet','timbals','plats','contrabaix','trompa','arpa']);
+const IDS=LIST.flatMap(f=>f.subs.flatMap(s=>s.items.map(i=>i[0]))).filter(id=>READY.has(id));
 
 /* ================= menú de famílies ================= */
 const nav=$('#families');
-nav.innerHTML=LIST.map(f=>`<div class="fam"><span class="famname">${f.fam}</span><div class="famitems">${f.items.map(i=>`<button type="button" data-id="${i.id}" aria-pressed="false"><span class="sub">${f.fam==='Percussió'?'Percussió '+i.sub.toLowerCase():(f.fam==='Corda'?'Corda ':'Vent ')+i.sub.toLowerCase()}</span><span class="nm">${i.name}</span></button>`).join('')}</div></div>`).join('');
+nav.innerHTML=LIST.map(f=>`<div class="fam"><span class="famname">${f.fam}</span>${f.subs.map(s=>{const its=s.items.filter(i=>READY.has(i[0]));if(!its.length) return '';
+  return `<div class="subrow"><span class="sublbl">${s.sub}</span><div class="famitems">${its.map(([id,nm])=>`<button type="button" data-id="${id}" aria-pressed="false">${nm}</button>`).join('')}</div></div>`;}).join('')}</div>`).join('');
 nav.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.id!==st.id) load(b.dataset.id);}));
 
 /* ================= estat ================= */

@@ -1,18 +1,18 @@
 # Instruments per dins
 
-Web educativa en 3D per a 3r d'ESO: un instrument per cada subfamília. Es pot girar, desmuntar, tocar i recórrer en una visita guiada que ensenya com es produeix el so.
+Web educativa en 3D per a 3r d'ESO: 21 instruments de l'orquestra, ordenats per família i subfamília. Es pot girar, desmuntar, tocar i recórrer en una visita guiada que ensenya com es produeix el so.
 
-| Família | Subfamília | Instrument |
+| Família | Subfamília | Instruments |
 |---|---|---|
-| Corda | Fregada | Violí |
-| Corda | Pinçada | Guitarra |
+| Corda | Fregada | Violí, Viola, Violoncel, Contrabaix |
+| Corda | Pinçada | Guitarra, Arpa |
 | Corda | Percudida | Piano |
-| Vent | Fusta | Flauta travessera |
-| Vent | Metall | Trompeta |
-| Percussió | Afinada | Xilòfon |
-| Percussió | No afinada | Caixa |
+| Vent | Fusta | Flauta travessera, Clarinet, Oboè, Fagot |
+| Vent | Metall | Trompeta, Trompa, Trombó de vares, Tuba |
+| Percussió | Afinada | Xilòfon, Timbals |
+| Percussió | No afinada | Caixa, Bombo, Plats, Triangle |
 
-Enllaç directe a un instrument: afegeix `#violi`, `#guitarra`, `#piano`, `#flauta`, `#trompeta`, `#xilofon` o `#caixa` al final de l'adreça.
+Enllaç directe a un instrument: afegeix `#` i el nom del fitxer de `inst/` al final de l'adreça (per exemple `#violoncel`, `#trombo`, `#timbals`).
 
 ## Executar-ho en local
 
