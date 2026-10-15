@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {SUBS,BY_ID,ORDER} from './cataleg.js';
 
 const $=s=>document.querySelector(s);
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
@@ -8,27 +9,15 @@ const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
 
-const LIST=[
-  {fam:'Corda',subs:[
-    {sub:'Fregada',items:[['violi','Violí'],['viola','Viola'],['violoncel','Violoncel'],['contrabaix','Contrabaix']]},
-    {sub:'Pinçada',items:[['guitarra','Guitarra'],['arpa','Arpa']]},
-    {sub:'Percudida',items:[['piano','Piano']]}]},
-  {fam:'Vent',subs:[
-    {sub:'Fusta',items:[['flauta','Flauta travessera'],['clarinet','Clarinet'],['oboe','Oboè'],['fagot','Fagot']]},
-    {sub:'Metall',items:[['trompeta','Trompeta'],['trompa','Trompa'],['trombo','Trombó de vares'],['tuba','Tuba']]}]},
-  {fam:'Percussió',subs:[
-    {sub:'Afinada',items:[['xilofon','Xilòfon'],['timbals','Timbals']]},
-    {sub:'No afinada',items:[['caixa','Caixa'],['bombo','Bombo'],['plats','Plats'],['triangle','Triangle']]}]}
-];
-// Instruments que ja tenen mòdul a inst/<id>.js (els altres no surten al menú)
-const READY=new Set(['violi','guitarra','piano','flauta','trompeta','xilofon','caixa','viola','oboe','tuba','triangle','trombo','fagot','bombo','violoncel','clarinet','timbals','plats','contrabaix','trompa','arpa']);
-const IDS=LIST.flatMap(f=>f.subs.flatMap(s=>s.items.map(i=>i[0]))).filter(id=>READY.has(id));
+const IDS=ORDER.filter(id=>BY_ID[id]);
 
-/* ================= menú de famílies ================= */
-const nav=$('#families');
-nav.innerHTML=LIST.map(f=>`<div class="fam"><span class="famname">${f.fam}</span>${f.subs.map(s=>{const its=s.items.filter(i=>READY.has(i[0]));if(!its.length) return '';
-  return `<div class="subrow"><span class="sublbl">${s.sub}</span><div class="famitems">${its.map(([id,nm])=>`<button type="button" data-id="${id}" aria-pressed="false">${nm}</button>`).join('')}</div></div>`;}).join('')}</div>`).join('');
-nav.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.id!==st.id) load(b.dataset.id);}));
+/* ================= barra del visor ================= */
+const pickSel=$('#pickI');
+pickSel.innerHTML=Object.keys(SUBS).map(k=>`<optgroup label="${SUBS[k].fam} ${SUBS[k].sub.toLowerCase()}">${IDS.filter(id=>BY_ID[id].s===k).map(id=>`<option value="${id}">${BY_ID[id].name}</option>`).join('')}</optgroup>`).join('');
+pickSel.addEventListener('change',()=>{location.hash=pickSel.value;});
+const step=d=>{const i=IDS.indexOf(st.id);location.hash=IDS[(i+d+IDS.length)%IDS.length];};
+$('#prevI').addEventListener('click',()=>step(-1));
+$('#nextI').addEventListener('click',()=>step(1));
 
 /* ================= estat ================= */
 const st={id:null,view:'explore',xray:false,heat:true,labels:true,sel:null,noteIndex:0,opt:0,tourI:0,loading:false};
@@ -280,7 +269,7 @@ function segBtns(el,items,get,set){
 function sync(){
   if(!inst) return;
   for(const el of [$('#sNotes'),$('#sOpt')]) if(el._get) [...el.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===el._get())));
-  nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===st.id)));
+  {const it=BY_ID[st.id];if(it){const S=SUBS[it.s];$('#crumb').style.setProperty('--c',`var(${S.color})`);$('#cFam').textContent=`${S.fam} · ${S.sub}`;$('#cName').textContent=it.name;pickSel.value=st.id;}}
   document.querySelectorAll('#views button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===st.view)));
   $('#tgX').setAttribute('aria-pressed',String(st.xray));$('#tgHeat').setAttribute('aria-pressed',String(st.heat));$('#tgLbl').setAttribute('aria-pressed',String(st.labels));
   if(st.view!=='tour'){
@@ -410,6 +399,7 @@ const S={};
 function frame(){
   requestAnimationFrame(frame);
   const dt=Math.min(0.05,clock.getDelta()),T=performance.now()/1000;frameDt=dt;
+  if(viewer.hidden) return;
   if(!inst){renderer.render(scene,camera);return;}
   if(E!==ET){const sp=dt/1.9;E=ET>E?Math.min(ET,E+sp):Math.max(ET,E-sp);applyExplode();}
   if(fly){fly.t+=dt;const k=ease(Math.min(1,fly.t/fly.dur));camera.position.lerpVectors(fly.p0,fly.p1,k);controls.target.lerpVectors(fly.t0,fly.t1,k);if(fly.t>=fly.dur){const d=fly.done;fly=null;controls.enabled=true;d&&d();}}
@@ -439,5 +429,17 @@ function frame(){
 }
 requestAnimationFrame(frame);
 
-const start=(location.hash||'').slice(1);
-load(IDS.includes(start)?start:'guitarra');
+/* ================= navegació: portada ↔ visor ================= */
+const landing=$('#landing'),viewer=$('#viewer');
+function route(){
+  const h=(location.hash||'').slice(1);
+  if(IDS.includes(h)){
+    landing.hidden=true;viewer.hidden=false;window.scrollTo(0,0);
+    resize();if(h!==st.id) load(h);
+  }else{
+    stopVoices();viewer.hidden=true;landing.hidden=false;
+    if(h){const el=document.getElementById(h);if(el) el.scrollIntoView();}
+  }
+}
+addEventListener('hashchange',route);
+route();

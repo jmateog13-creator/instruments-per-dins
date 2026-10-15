@@ -26,7 +26,9 @@ i obrir <http://localhost:8765/>.
 
 ## Estructura
 
-- `index.html` — pàgina, estils i interfície.
+- `index.html` — pàgina, estils i interfície (portada, mapa de l'orquestra i visor 3D).
+- `cataleg.js` — llista d'instruments: família, subfamília, descripció i lloc a l'orquestra.
+- `orquestra.js` — portada i mapa de l'orquestra per triar instrument.
 - `app.js` — motor comú (Three.js r160 des de jsDelivr): escena, càmera, etiquetes, despiece, visita guiada, partícules d'aire, ones i síntesi de so.
 - `inst/*.js` — un mòdul per instrument.
 - `SPEC.md` — especificació per afegir instruments nous.
